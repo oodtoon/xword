@@ -1,4 +1,4 @@
-type DirectionType = 'Across' | 'Down';
+export type DirectionType = 'Across' | 'Down';
 
 type TextType = {
 	plain: string;
