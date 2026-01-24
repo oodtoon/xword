@@ -1,13 +1,16 @@
 <script lang="ts">
 	import Title from '$lib/components/Title.svelte';
-	import { type CellType } from '$lib/types/crossword';
+	import { type CellType, type DirectionType } from '$lib/types/crossword';
 	let { data } = $props();
 
 	const { cells, dimensions, clues } = data.game.body['0'];
 	const { width, height } = dimensions;
+	const totalCells = width * height;
 	const cellSize = 100 / Math.max(dimensions.width, dimensions.height);
+
 	let selectedCell = $state<number | null>(null);
 	let userInput = $state<Record<number, string>>({});
+	let direction = $state<DirectionType>('Across');
 	// console.log(data.game.body['0']);
 
 	function handleCellClick(index: number, cell: CellType) {
@@ -16,36 +19,161 @@
 		}
 	}
 
-	function handleArrowKey(e: KeyboardEvent) {
-		e.preventDefault();
-		let newIndex = selectedCell!;
-		const currentRow = Math.floor(selectedCell! / width);
-		const currentCol = selectedCell! % width;
+	function shouldHighlightCell(row: number, column: number) {
+		if (!selectedCell) return false;
 
-		if (e.key === 'ArrowUp') {
-			newIndex = currentRow === 0 ? (height - 1) * width + currentCol : selectedCell! - width;
-		} else if (e.key === 'ArrowDown') {
-			newIndex =
-				currentRow === height - 1
-					? currentCol // Wrap to top
-					: selectedCell + width;
-		} else if (e.key === 'ArrowLeft') {
-			newIndex = currentCol === 0 ? selectedCell + width - 1 : selectedCell! - 1;
-		} else if (e.key === 'ArrowRight') {
-			newIndex = currentCol === width - 1 ? selectedCell! - width + 1 : selectedCell! + 1;
+		const selectedRow = Math.floor(selectedCell / width);
+		const selectedColumn = selectedCell % width;
+
+		if (direction === 'Across') {
+			return row === selectedRow;
 		}
 
-		if (cells[newIndex]?.answer) {
-			selectedCell = newIndex;
+		if (direction === 'Down') {
+			return column === selectedColumn;
+		}
+
+		return false;
+	}
+
+	function selectToRight(newIndex: number) {
+		return (newIndex + 1) % totalCells;
+	}
+
+	function selectToLeft(newIndex: number) {
+		return (newIndex - 1 + totalCells) % totalCells;
+	}
+
+	function selectDown(currentCol: number) {
+		return (currentCol + 1) % width;
+	}
+
+	function selectUp(currentCol: number) {
+		return (height - 1) * width + ((currentCol - 1 + width) % width);
+	}
+
+	function findNextAvailableCell(startIndex: number, step: number, limit: number): number | null {
+		for (let i = 0; i < limit; i++) {
+			const checkIndex = startIndex + i * step;
+			if (cells[checkIndex]?.answer) {
+				return checkIndex;
+			}
+		}
+		return null;
+	}
+
+	function getNextLine(e: KeyboardEvent, currentLine: number, totalLines: number) {
+		const reverse = e.shiftKey;
+		return reverse ? (currentLine - 1 + totalLines) % totalLines : (currentLine + 1) % totalLines;
+	}
+
+	function handleArrowKey(e: KeyboardEvent) {
+		e.preventDefault();
+
+		const isHorizontal = e.key === 'ArrowLeft' || e.key === 'ArrowRight';
+		const newDirection = isHorizontal ? 'Across' : 'Down';
+
+		if (direction !== newDirection) {
+			direction = newDirection;
+			return;
+		}
+
+		let newIndex = selectedCell!;
+		const currentCol = selectedCell! % width;
+
+		for (let i = 0; i < totalCells; i++) {
+			if (e.key === 'ArrowRight') {
+				newIndex = selectToRight(newIndex);
+			} else if (e.key === 'ArrowLeft') {
+				newIndex = selectToLeft(newIndex);
+			} else if (e.key === 'ArrowDown') {
+				newIndex += width;
+				if (newIndex >= totalCells) {
+					newIndex = selectDown(currentCol);
+				}
+			} else {
+				newIndex -= width;
+				if (newIndex < 0) {
+					newIndex = selectUp(currentCol);
+				}
+			}
+
+			if (cells[newIndex]?.answer) {
+				selectedCell = newIndex;
+				return;
+			}
+		}
+	}
+
+	function handleLetterPress(key: string, e: KeyboardEvent) {
+		userInput[selectedCell!] = key;
+
+		if (e.shiftKey) {
+			return;
+		}
+
+		const currentCol = selectedCell! % width;
+		let newIndex = selectedCell!;
+
+		for (let i = 0; i < totalCells; i++) {
+			if (direction === 'Across') {
+				newIndex = selectToRight(newIndex);
+			} else {
+				newIndex += width;
+				if (newIndex >= totalCells) {
+					newIndex = selectDown(currentCol);
+				}
+			}
+
+			if (cells[newIndex]?.answer) {
+				selectedCell = newIndex;
+				return;
+			}
 		}
 	}
 
 	function handleBackspace() {
 		delete userInput[selectedCell!];
+
+		const currentCol = selectedCell! % width;
+		let newIndex = selectedCell!;
+
+		for (let i = 0; i < totalCells; i++) {
+			if (direction === 'Across') {
+				newIndex = selectToLeft(newIndex);
+			} else {
+				newIndex -= width;
+				if (newIndex < 0) {
+					newIndex = selectUp(currentCol);
+				}
+			}
+
+			if (cells[newIndex]?.answer) {
+				selectedCell = newIndex;
+				return;
+			}
+		}
 	}
 
-	function handleLetterPress(key: string) {
-		userInput[selectedCell!] = key;
+	function handleTabPress(e: KeyboardEvent) {
+		e.preventDefault();
+
+		const currentRow = Math.floor(selectedCell! / width);
+		const currentCol = selectedCell! % width;
+		const rowJump = 1;
+
+		if (direction === 'Across') {
+			const nextRow = getNextLine(e, currentRow, height);
+			const startIndex = nextRow * width;
+			const nextCell = findNextAvailableCell(startIndex, rowJump, width);
+
+			if (nextCell !== null) selectedCell = nextCell;
+		} else {
+			const nextCol = getNextLine(e, currentCol, width);
+			const nextCell = findNextAvailableCell(nextCol, width, height);
+
+			if (nextCell !== null) selectedCell = nextCell;
+		}
 	}
 
 	function handleKeyPress(e: KeyboardEvent) {
@@ -61,9 +189,13 @@
 			return;
 		}
 
+		if (e.key === 'Tab') {
+			handleTabPress(e);
+		}
+
 		const key = e.key.toUpperCase();
 		if (key.length === 1 && key >= 'A' && key <= 'Z') {
-			handleLetterPress(key);
+			handleLetterPress(key, e);
 		}
 	}
 
@@ -82,19 +214,26 @@
 			{@const col = index % dimensions.width}
 			{@const x = col * cellSize}
 			{@const y = row * cellSize}
-			{@const isBlack = !cell.answer}
+			{@const isBlock = !cell.answer}
 			{@const isSelected = selectedCell === index}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			{@const isHighlighted =
+				index !== selectedCell && cell.answer && shouldHighlightCell(row, col)}
 			<g
 				onclick={() => handleCellClick(index, cell)}
-				style="cursor: {isBlack ? 'default' : 'pointer'}"
+				style="cursor: {isBlock ? 'default' : 'pointer'}"
 			>
 				<rect
 					x="{x}%"
 					y="{y}%"
 					width="{cellSize}%"
 					height="{cellSize}%"
-					class="{isBlack ? 'block' : isSelected ? 'cell-selected' : 'cell'} cell-border"
+					class="{isBlock
+						? 'block'
+						: isSelected
+							? 'cell-selected'
+							: isHighlighted
+								? 'highlighted'
+								: 'cell'} cell-border"
 					stroke-width="0.3"
 				/>
 				{#if cell.label}
@@ -108,7 +247,7 @@
 						{cell.label}
 					</text>
 				{/if}
-				{#if !isBlack && userInput[index]}
+				{#if !isBlock && userInput[index]}
 					<text
 						class="cell-letter"
 						x="{x + cellSize / 2}%"

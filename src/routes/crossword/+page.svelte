@@ -107,7 +107,7 @@
 				return { row: rowIndex, column: columnIndex };
 			}
 		}
-		return null;
+		return null; 
 	}
 
 	$effect(() => {
