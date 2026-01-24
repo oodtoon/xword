@@ -94,17 +94,15 @@
 					y="{y}%"
 					width="{cellSize}%"
 					height="{cellSize}%"
-					fill={isBlack ? '#000' : isSelected ? '#fceb8f' : '#fff'}
-					stroke="#000"
+					class="{isBlack ? 'block' : isSelected ? 'cell-selected' : 'cell'} cell-border"
 					stroke-width="0.3"
 				/>
 				{#if cell.label}
 					<text
-						class="select-none"
+						class="cell-label select-none"
 						x="{x + 0.5}%"
 						y="{y + 2.5}%"
 						font-size="2"
-						fill="#000"
 						font-family="Arial, sans-serif"
 					>
 						{cell.label}
@@ -112,10 +110,10 @@
 				{/if}
 				{#if !isBlack && userInput[index]}
 					<text
+						class="cell-letter"
 						x="{x + cellSize / 2}%"
 						y="{y + cellSize / 2 + 1.5}%"
 						font-size="12"
-						fill="#000"
 						text-anchor="middle"
 						dominant-baseline="middle"
 					>
