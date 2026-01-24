@@ -2,6 +2,7 @@
 	import ClueInput from '$lib/components/ClueInput.svelte';
 	import Grid from '$lib/components/Grid.svelte';
 	import LinkButton from '$lib/components/LinkButton.svelte';
+	import Title from '$lib/components/Title.svelte';
 	import {
 		crossword,
 		type Cell,
@@ -81,6 +82,7 @@
 	});
 </script>
 
+<Title>Step 3: Add Clues</Title>
 <div class="flex justify-center gap-10">
 	<Grid>
 		{#each $data.grid as row, r}
@@ -133,5 +135,7 @@
 	</div>
 </div>
 
-<LinkButton href="/setup/numbers">Back: Reassign Numbers</LinkButton>
-<LinkButton href="/">PLAY!</LinkButton>
+<div class="flex justify-center m-4">
+	<LinkButton href="/setup/numbers">Back: Reassign Numbers</LinkButton>
+	<LinkButton href="/crossword">PLAY!</LinkButton>
+</div>

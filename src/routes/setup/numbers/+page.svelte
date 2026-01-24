@@ -2,6 +2,7 @@
 	import { crossword, type CrosswordState } from '$lib/stores/crossword';
 	import Grid from '$lib/components/Grid.svelte';
 	import LinkButton from '$lib/components/LinkButton.svelte';
+	import Title from '$lib/components/Title.svelte';
 
 	// auto-derive store in Svelte 5
 	let data = $derived(crossword);
@@ -68,6 +69,7 @@
 	});
 </script>
 
+<Title>Step 2: Add Numbers</Title>
 <div class="flex justify-center">
 	<Grid>
 		{#each $data.grid as row, r}
@@ -96,5 +98,7 @@
 	</Grid>
 </div>
 
-<LinkButton href="/setup/blocks">Back: Reassign Blocks</LinkButton>
-<LinkButton href="/setup/clues">Next: Add Clues →</LinkButton>
+<div class="flex justify-center m-4">
+	<LinkButton href="/setup/blocks">Back: Reassign Blocks</LinkButton>
+	<LinkButton href="/setup/clues">Next: Add Clues →</LinkButton>
+</div>

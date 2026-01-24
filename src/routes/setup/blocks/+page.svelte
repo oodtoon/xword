@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Grid from '$lib/components/Grid.svelte';
 	import LinkButton from '$lib/components/LinkButton.svelte';
+	import Title from '$lib/components/Title.svelte';
 	import { initGrid } from '$lib/stores/crossword.js';
 	import { crossword } from '$lib/stores/crossword.js';
 
 	initGrid();
 
 	let data = $derived(crossword);
-	console.log($data);
 
 	function toggleBlock(r: number, c: number) {
 		crossword.update((old) => {
@@ -19,6 +19,8 @@
 	}
 </script>
 
+
+<Title>Step 1: Add Black Blocks</Title>
 <div class="flex justify-center">
 	<Grid>
 		{#each $data.grid as row, r}
@@ -33,5 +35,8 @@
 		{/each}
 	</Grid>
 </div>
+<div class="flex justify-center m-4">
+	<LinkButton href="/">Back to Home Page</LinkButton>
+	<LinkButton href="/setup/numbers">Next: Assign Numbers →</LinkButton>
+</div>
 
-<LinkButton href="/setup/numbers">Next: Assign Numbers →</LinkButton>
