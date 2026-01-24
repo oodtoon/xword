@@ -1,17 +1,29 @@
 <script lang="ts">
+	import ClueList from '$lib/components/ClueList.svelte';
+	import CrosswordGrid from '$lib/components/CrosswordGrid.svelte';
 	import Title from '$lib/components/Title.svelte';
-	import { type CellType, type DirectionType } from '$lib/types/crossword';
+	import { type ClueType, type CellType, type DirectionType } from '$lib/types/crossword';
 	let { data } = $props();
 
 	const { cells, dimensions, clues } = data.game.body['0'];
 	const { width, height } = dimensions;
 	const totalCells = width * height;
-	const cellSize = 100 / Math.max(dimensions.width, dimensions.height);
 
-	let selectedCell = $state<number | null>(null);
+	let selectedCell = $state<number>(clues[0].cells[0]);
 	let userInput = $state<Record<number, string>>({});
 	let direction = $state<DirectionType>('Across');
-	// console.log(data.game.body['0']);
+	let currentClue = $derived.by(() => {
+		return clues.find(
+			(clue: ClueType) => clue.direction === direction && clue.cells.includes(selectedCell)
+		);
+	});
+	let altClue = $derived.by(() => {
+		return clues.find(
+			(clue: ClueType) => clue.direction !== direction && clue.cells.includes(selectedCell)
+		);
+	});
+	let selectedRow = $derived.by(() => Math.floor(selectedCell / width));
+	let selectedColumn = $derived.by(() => selectedCell % width);
 
 	function handleCellClick(index: number, cell: CellType) {
 		if (cell.answer) {
@@ -21,9 +33,6 @@
 
 	function shouldHighlightCell(row: number, column: number) {
 		if (!selectedCell) return false;
-
-		const selectedRow = Math.floor(selectedCell / width);
-		const selectedColumn = selectedCell % width;
 
 		if (direction === 'Across') {
 			return row === selectedRow;
@@ -205,86 +214,25 @@
 	});
 </script>
 
-<Title>Mini Crossword!</Title>
-
-<div class="flex p-10">
-	<svg viewBox="0 0 100 100" class="mx-auto w-full max-w-xl border-2 border-black">
-		{#each cells as cell, index}
-			{@const row = Math.floor(index / dimensions.width)}
-			{@const col = index % dimensions.width}
-			{@const x = col * cellSize}
-			{@const y = row * cellSize}
-			{@const isBlock = !cell.answer}
-			{@const isSelected = selectedCell === index}
-			{@const isHighlighted =
-				index !== selectedCell && cell.answer && shouldHighlightCell(row, col)}
-			<g
-				onclick={() => handleCellClick(index, cell)}
-				style="cursor: {isBlock ? 'default' : 'pointer'}"
-			>
-				<rect
-					x="{x}%"
-					y="{y}%"
-					width="{cellSize}%"
-					height="{cellSize}%"
-					class="{isBlock
-						? 'block'
-						: isSelected
-							? 'cell-selected'
-							: isHighlighted
-								? 'highlighted'
-								: 'cell'} cell-border"
-					stroke-width="0.3"
-				/>
-				{#if cell.label}
-					<text
-						class="cell-label select-none"
-						x="{x + 0.5}%"
-						y="{y + 2.5}%"
-						font-size="2"
-						font-family="Arial, sans-serif"
-					>
-						{cell.label}
-					</text>
-				{/if}
-				{#if !isBlock && userInput[index]}
-					<text
-						class="cell-letter"
-						x="{x + cellSize / 2}%"
-						y="{y + cellSize / 2 + 1.5}%"
-						font-size="12"
-						text-anchor="middle"
-						dominant-baseline="middle"
-					>
-						{userInput[index]}
-					</text>
-				{/if}
-			</g>
-		{/each}
-	</svg>
+<div class="flex justify-center gap-10 p-10">
+	<div class="flex w-xl flex-col items-center gap-4">
+		<div class="highlighted-clue mx-auto w-full max-w-xl rounded px-6 py-2">
+			<h3 class="font-semibold">{direction}</h3>
+			{currentClue.text[0].plain}
+		</div>
+		<CrosswordGrid
+			{cells}
+			{width}
+			{height}
+			{direction}
+			{selectedCell}
+			{userInput}
+			{handleCellClick}
+		/>
+	</div>
 
 	<div class="flex flex-col gap-10">
-		<ol>
-			<h2 class="text-2xl font-bold underline">Across</h2>
-			{#each clues as clue}
-				{#if clue.direction === 'Across'}
-					<li class="my-1 flex gap-2">
-						<span class="w-6 font-semibold">{clue.label}</span>
-						<span>{clue.text[0].plain}</span>
-					</li>
-				{/if}
-			{/each}
-		</ol>
-		<ol>
-			<h2 class="text-2xl font-bold underline">Down</h2>
-			{#each clues as clue}
-				{#if clue.direction === 'Down'}
-					<li class="my-1 flex gap-2">
-						<span class="w-6 font-semibold">{clue.label}</span>
-						<span>{clue.text[0].plain}</span>
-					</li>
-				{/if}
-			{/each}
-		</ol>
+		<ClueList {clues} {currentClue} {altClue} clueDirection={'Across'} />
+		<ClueList {clues} {currentClue} {altClue} clueDirection={'Down'} />
 	</div>
 </div>
