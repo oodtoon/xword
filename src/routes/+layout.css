@@ -1,2 +1,66 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+
+.cell {
+	fill: #fff;
+  stroke: #000;
+}
+
+.cell-selected {
+	fill: #fceb8f;
+}
+.cell-label {
+	fill: #000;
+}
+
+.cell-letter {
+	fill: #000;
+}
+
+.block {
+	fill: #000;
+  stroke: #666;
+}
+
+.cell-border {
+  border: #000
+}
+
+.dark {
+	color: #fff;
+	background-color: #121212;
+
+	.cell {
+		fill: #2a2a2a;
+	}
+	.cell-selected {
+		/* fill: #5075bf */
+		fill: #4277b8;
+	}
+	.cell-label {
+		fill: #bebebe;
+	}
+	.cell-letter {
+		fill: #dedede;
+	}
+	.block {
+		stroke: #000;
+	}
+}
+
+/* .nytDark {
+  bg: "#121212",
+  surface: "#1E1E1E",
+  surface2: "#2A2A2A",
+
+  cell: "#E6E6E6",
+  block: "#000000",
+  grid: "#555555",
+
+  text: "#FFFFFF",
+  textMuted: "#BDBDBD",
+
+  selected: "#4D88FF",
+  highlight: "#2F5FD7",
+  incorrect: "#FF4D4D",
+} */
