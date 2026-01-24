@@ -2,6 +2,7 @@
 	import './+layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { onMount } from 'svelte';
+	import DarkModeSwitch from '$lib/components/DarkModeSwitch.svelte';
 
 	let { children } = $props();
 
@@ -15,13 +16,12 @@
 	});
 
 	function updateDom() {
-		console.log(document.documentElement)
+		console.log(document.documentElement);
 		document.documentElement.classList.toggle('dark', isDarkMode);
 	}
 
 	function toggleDarkMode() {
 		isDarkMode = !isDarkMode;
-		console.log(isDarkMode)
 		localStorage.setItem('isDarkMode', String(isDarkMode));
 		updateDom();
 	}
@@ -30,8 +30,7 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <div class="flex justify-end">
 	<div class="mx-10 my-6">
-		<label for="dark-mode-toggle">Dark Mode</label>
-		<input type="checkbox" id="dark-mode-toggle" checked={isDarkMode} onchange={toggleDarkMode} />
+		<DarkModeSwitch {isDarkMode} {toggleDarkMode} />
 	</div>
 </div>
 
