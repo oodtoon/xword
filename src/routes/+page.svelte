@@ -8,4 +8,5 @@
 <Title>Build Your Own Mini Crossword!</Title>
 <div class="flex justify-center">
 	<LinkButton href="/setup/blocks">Create Puzzle</LinkButton>
+	<LinkButton href="/nyt">Play NYT Mini</LinkButton>
 </div>
