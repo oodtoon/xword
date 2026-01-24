@@ -8,7 +8,8 @@
 		direction,
 		selectedCell,
 		userInput,
-    handleCellClick,
+		checkedState,
+		handleCellClick
 	}: {
 		cells: CellType[];
 		width: number;
@@ -16,7 +17,8 @@
 		direction: DirectionType;
 		selectedCell: number;
 		userInput: Record<number, string>;
-    handleCellClick: (index: number, cell: CellType) => void;
+		checkedState: Record<number, boolean> | null;
+		handleCellClick: (index: number, cell: CellType) => void;
 	} = $props();
 
 	const cellSize = 100 / Math.max(width, height);
@@ -79,7 +81,9 @@
 			{/if}
 			{#if !isBlock && userInput[index]}
 				<text
-					class="cell-letter"
+					class={checkedState?.[index]
+						? 'correct-letter'
+						: 'cell-letter'}
 					x="{x + cellSize / 2}%"
 					y="{y + cellSize / 2 + 1.5}%"
 					font-size="12"

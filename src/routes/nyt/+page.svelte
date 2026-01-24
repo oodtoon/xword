@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ClueList from '$lib/components/ClueList.svelte';
 	import CrosswordGrid from '$lib/components/CrosswordGrid.svelte';
-	import Title from '$lib/components/Title.svelte';
 	import { type ClueType, type CellType, type DirectionType } from '$lib/types/crossword';
 	let { data } = $props();
 
@@ -12,6 +11,7 @@
 	let selectedCell = $state<number>(clues[0].cells[0]);
 	let userInput = $state<Record<number, string>>({});
 	let direction = $state<DirectionType>('Across');
+	let checkedState = $state<Record<number, boolean> | null>(null);
 	let currentClue = $derived.by(() => {
 		return clues.find(
 			(clue: ClueType) => clue.direction === direction && clue.cells.includes(selectedCell)
@@ -22,27 +22,11 @@
 			(clue: ClueType) => clue.direction !== direction && clue.cells.includes(selectedCell)
 		);
 	});
-	let selectedRow = $derived.by(() => Math.floor(selectedCell / width));
-	let selectedColumn = $derived.by(() => selectedCell % width);
 
 	function handleCellClick(index: number, cell: CellType) {
 		if (cell.answer) {
 			selectedCell = index;
 		}
-	}
-
-	function shouldHighlightCell(row: number, column: number) {
-		if (!selectedCell) return false;
-
-		if (direction === 'Across') {
-			return row === selectedRow;
-		}
-
-		if (direction === 'Down') {
-			return column === selectedColumn;
-		}
-
-		return false;
 	}
 
 	function selectToRight(newIndex: number) {
@@ -208,6 +192,22 @@
 		}
 	}
 
+	function checkPuzzle() {
+		const results: Record<number, boolean> = {};
+
+		for (const index in userInput) {
+			const i = Number(index);
+			const input = userInput[i];
+			const answer = cells[i]?.answer;
+
+			if (!input || !answer) continue;
+
+			results[i] = input === answer;
+		}
+
+		checkedState = results;
+	}
+
 	$effect(() => {
 		window.addEventListener('keydown', handleKeyPress);
 		return () => window.removeEventListener('keydown', handleKeyPress);
@@ -227,12 +227,19 @@
 			{direction}
 			{selectedCell}
 			{userInput}
+			{checkedState}
 			{handleCellClick}
 		/>
 	</div>
 
-	<div class="flex flex-col gap-10">
-		<ClueList {clues} {currentClue} {altClue} clueDirection={'Across'} />
-		<ClueList {clues} {currentClue} {altClue} clueDirection={'Down'} />
+	<div class="flex flex-col">
+		<button
+			onclick={checkPuzzle}
+			class="ml-auto cursor-pointer rounded border-2 border-white bg-black p-2">Check Puzzle</button
+		>
+		<div class="flex flex-col gap-10">
+			<ClueList {clues} {currentClue} {altClue} clueDirection={'Across'} />
+			<ClueList {clues} {currentClue} {altClue} clueDirection={'Down'} />
+		</div>
 	</div>
 </div>
