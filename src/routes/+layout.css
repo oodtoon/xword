@@ -27,6 +27,10 @@
 .cell-border {
 	border: #000;
 }
+
+.highlighted-clue {
+	background-color: #a7d8ff;
+}
 .dark {
 	color: #fff;
 	background-color: #121212;
@@ -49,5 +53,9 @@
 	}
 	.block {
 		stroke: #000;
+	}
+
+	.highlighted-clue {
+		background-color: #4277b8;
 	}
 }
