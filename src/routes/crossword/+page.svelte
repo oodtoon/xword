@@ -90,8 +90,6 @@
 		const totalColumns = $crossword.grid[0].length;
 		const row = $crossword.grid[rowIndex];
 
-		console.log({ row, totalColumns, rowIndex });
-
 		for (let columnIndex = 0; columnIndex < totalColumns; columnIndex++) {
 			if (!row[columnIndex].isBlock) {
 				return { row: rowIndex, column: columnIndex };
