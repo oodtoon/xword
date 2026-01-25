@@ -100,6 +100,7 @@
 
 	function handleLetterPress(key: string, e: KeyboardEvent) {
 		userInput[selectedCell!] = key;
+		clearIncorrectCellCheck(selectedCell!)
 
 		if (e.shiftKey) {
 			return;
@@ -126,7 +127,10 @@
 	}
 
 	function handleBackspace() {
-		delete userInput[selectedCell!];
+		if (!checkedState?.[selectedCell!]) {
+			delete userInput[selectedCell!];
+		}
+
 
 		const currentCol = selectedCell! % width;
 		let newIndex = selectedCell!;
@@ -208,6 +212,14 @@
 		checkedState = results;
 	}
 
+	function clearIncorrectCellCheck(index: number) {
+		if (checkedState && checkedState[index] === false) {
+			const newCheckedState = { ...checkedState };
+			delete newCheckedState[index];
+			checkedState = newCheckedState;
+		}
+	}
+
 	$effect(() => {
 		window.addEventListener('keydown', handleKeyPress);
 		return () => window.removeEventListener('keydown', handleKeyPress);
@@ -233,9 +245,8 @@
 	</div>
 
 	<div class="flex flex-col">
-		<button
-			onclick={checkPuzzle}
-			class="check-puzzle-btn ml-auto cursor-pointer rounded p-2">Check Puzzle</button
+		<button onclick={checkPuzzle} class="check-puzzle-btn ml-auto cursor-pointer rounded p-2"
+			>Check Puzzle</button
 		>
 		<div class="flex flex-col gap-10">
 			<ClueList {clues} {currentClue} {altClue} clueDirection={'Across'} />

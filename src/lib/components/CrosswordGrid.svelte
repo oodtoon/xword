@@ -92,6 +92,18 @@
 				>
 					{userInput[index]}
 				</text>
+				{#if checkedState?.[index] === false}
+					<line
+						x1={x}
+						y1={y + cellSize}
+						x2={x + cellSize}
+						y2={y}
+						stroke="#dc2626"
+						stroke-width="0.4"
+						stroke-linecap="round"
+						pointer-events="none"
+					/>
+				{/if}
 			{/if}
 		</g>
 	{/each}
