@@ -216,7 +216,7 @@
 
 <div class="flex justify-center gap-10 p-10">
 	<div class="flex w-xl flex-col items-center gap-4">
-		<div class="highlighted-clue mx-auto w-full max-w-xl rounded px-6 py-2">
+		<div class="highlighted-clue mx-auto w-full max-w-md rounded px-6 py-2">
 			<h3 class="font-semibold">{direction}</h3>
 			{currentClue.text[0].plain}
 		</div>
@@ -235,7 +235,7 @@
 	<div class="flex flex-col">
 		<button
 			onclick={checkPuzzle}
-			class="ml-auto cursor-pointer rounded border-2 border-white bg-black p-2">Check Puzzle</button
+			class="check-puzzle-btn ml-auto cursor-pointer rounded p-2">Check Puzzle</button
 		>
 		<div class="flex flex-col gap-10">
 			<ClueList {clues} {currentClue} {altClue} clueDirection={'Across'} />

@@ -41,7 +41,7 @@
 	}
 </script>
 
-<svg viewBox="0 0 100 100" class="mx-auto w-full max-w-xl border-2 border-black">
+<svg viewBox="0 0 100 100" class="mx-auto w-full max-w-md border-2 border-black">
 	{#each cells as cell, index}
 		{@const row = Math.floor(index / width)}
 		{@const col = index % width}
@@ -81,7 +81,7 @@
 			{/if}
 			{#if !isBlock && userInput[index]}
 				<text
-					class={checkedState?.[index]
+					class={checkedState?.[index] && userInput[index] === cell.answer
 						? 'correct-letter'
 						: 'cell-letter'}
 					x="{x + cellSize / 2}%"

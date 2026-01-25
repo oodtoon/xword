@@ -234,7 +234,7 @@
 						const nextFocus = findFirstSquareInColumn(nextColumn);
 						if (nextFocus) focused = nextFocus;
 					}
-					return; // st
+					return;
 
 				default:
 					return;
