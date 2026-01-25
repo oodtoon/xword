@@ -55,11 +55,11 @@
 }
 
 .check-puzzle-btn:hover {
-  background-color: #a7d8ff;
+	background-color: #a7d8ff;
 }
 
 .check-puzzle-btn:active {
-  background-color: #7cb5fb;
+	background-color: #7cb5fb;
 }
 .dark {
 	color: #fff;
@@ -112,11 +112,15 @@
 		border: 1px solid white;
 	}
 
-  .check-puzzle-btn:hover {
-  background-color: #4277b8;
-}
+	.check-puzzle-btn:hover {
+		background-color: #4277b8;
+	}
 
-.check-puzzle-btn:active {
-  background-color: #1d293d;
-}
+	.check-puzzle-btn:active {
+		background-color: #1d293d;
+	}
+
+	::-webkit-calendar-picker-indicator {
+		filter: invert(1);
+	}
 }
