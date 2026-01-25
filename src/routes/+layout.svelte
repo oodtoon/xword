@@ -3,6 +3,8 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { onMount } from 'svelte';
 	import DarkModeSwitch from '$lib/components/DarkModeSwitch.svelte';
+	import LinkButton from '$lib/components/LinkButton.svelte';
+	import Home from '$lib/components/icons/Home.svelte';
 
 	let { children } = $props();
 
@@ -28,7 +30,8 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<div class="flex justify-end">
+<div class="flex justify-between">
+	<a href="/" class="flex items-center gap-2 mx-10 my-6"><Home /> Home</a>
 	<div class="mx-10 my-6">
 		<DarkModeSwitch {isDarkMode} {toggleDarkMode} />
 	</div>
