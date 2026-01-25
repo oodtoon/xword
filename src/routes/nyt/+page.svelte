@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ClueList from '$lib/components/ClueList.svelte';
 	import CrosswordGrid from '$lib/components/CrosswordGrid.svelte';
-	import Title from '$lib/components/Title.svelte';
 	import { type ClueType, type CellType, type DirectionType } from '$lib/types/crossword';
 	let { data } = $props();
 
@@ -12,6 +11,7 @@
 	let selectedCell = $state<number>(clues[0].cells[0]);
 	let userInput = $state<Record<number, string>>({});
 	let direction = $state<DirectionType>('Across');
+	let checkedState = $state<Record<number, boolean> | null>(null);
 	let currentClue = $derived.by(() => {
 		return clues.find(
 			(clue: ClueType) => clue.direction === direction && clue.cells.includes(selectedCell)
@@ -22,27 +22,11 @@
 			(clue: ClueType) => clue.direction !== direction && clue.cells.includes(selectedCell)
 		);
 	});
-	let selectedRow = $derived.by(() => Math.floor(selectedCell / width));
-	let selectedColumn = $derived.by(() => selectedCell % width);
 
 	function handleCellClick(index: number, cell: CellType) {
 		if (cell.answer) {
 			selectedCell = index;
 		}
-	}
-
-	function shouldHighlightCell(row: number, column: number) {
-		if (!selectedCell) return false;
-
-		if (direction === 'Across') {
-			return row === selectedRow;
-		}
-
-		if (direction === 'Down') {
-			return column === selectedColumn;
-		}
-
-		return false;
 	}
 
 	function selectToRight(newIndex: number) {
@@ -116,6 +100,7 @@
 
 	function handleLetterPress(key: string, e: KeyboardEvent) {
 		userInput[selectedCell!] = key;
+		clearIncorrectCellCheck(selectedCell!)
 
 		if (e.shiftKey) {
 			return;
@@ -142,7 +127,10 @@
 	}
 
 	function handleBackspace() {
-		delete userInput[selectedCell!];
+		if (!checkedState?.[selectedCell!]) {
+			delete userInput[selectedCell!];
+		}
+
 
 		const currentCol = selectedCell! % width;
 		let newIndex = selectedCell!;
@@ -208,6 +196,30 @@
 		}
 	}
 
+	function checkPuzzle() {
+		const results: Record<number, boolean> = {};
+
+		for (const index in userInput) {
+			const i = Number(index);
+			const input = userInput[i];
+			const answer = cells[i]?.answer;
+
+			if (!input || !answer) continue;
+
+			results[i] = input === answer;
+		}
+
+		checkedState = results;
+	}
+
+	function clearIncorrectCellCheck(index: number) {
+		if (checkedState && checkedState[index] === false) {
+			const newCheckedState = { ...checkedState };
+			delete newCheckedState[index];
+			checkedState = newCheckedState;
+		}
+	}
+
 	$effect(() => {
 		window.addEventListener('keydown', handleKeyPress);
 		return () => window.removeEventListener('keydown', handleKeyPress);
@@ -216,7 +228,7 @@
 
 <div class="flex justify-center gap-10 p-10">
 	<div class="flex w-xl flex-col items-center gap-4">
-		<div class="highlighted-clue mx-auto w-full max-w-xl rounded px-6 py-2">
+		<div class="highlighted-clue mx-auto w-full max-w-md rounded px-6 py-2">
 			<h3 class="font-semibold">{direction}</h3>
 			{currentClue.text[0].plain}
 		</div>
@@ -227,12 +239,18 @@
 			{direction}
 			{selectedCell}
 			{userInput}
+			{checkedState}
 			{handleCellClick}
 		/>
 	</div>
 
-	<div class="flex flex-col gap-10">
-		<ClueList {clues} {currentClue} {altClue} clueDirection={'Across'} />
-		<ClueList {clues} {currentClue} {altClue} clueDirection={'Down'} />
+	<div class="flex flex-col">
+		<button onclick={checkPuzzle} class="check-puzzle-btn ml-auto cursor-pointer rounded p-2"
+			>Check Puzzle</button
+		>
+		<div class="flex flex-col gap-10">
+			<ClueList {clues} {currentClue} {altClue} clueDirection={'Across'} />
+			<ClueList {clues} {currentClue} {altClue} clueDirection={'Down'} />
+		</div>
 	</div>
 </div>
