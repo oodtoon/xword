@@ -9,6 +9,7 @@ export class MiniCrossword {
 	totalCells: number = 25;
 	direction = $state<DirectionType>('Across');
 	selectedCellIndex = $state<number>(0);
+	isWin = $state<boolean>(false);
 
 	userInput = $state<Record<number, string>>({});
 	checkedState = $state<Record<number, boolean> | null>(null);
@@ -192,6 +193,9 @@ export class MiniCrossword {
 		const key = e.key.toUpperCase();
 		if (key.length === 1 && key >= 'A' && key <= 'Z') {
 			this.handleLetterPress(key, e);
+			if (this.isWinState()) {
+				this.isWin = true;
+			}
 		}
 	};
 
@@ -219,9 +223,16 @@ export class MiniCrossword {
 		this.checkedState = results;
 	};
 
+	isWinState = () => {
+		return this.cells.every((cell, index) => {
+			return cell?.answer === this.userInput[index];
+		});
+	};
+
 	reset() {
 		this.userInput = {};
 		this.checkedState = null;
 		this.selectedCellIndex = 0;
+		this.isWin = false;
 	}
 }
