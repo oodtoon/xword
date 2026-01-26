@@ -7,7 +7,7 @@
 	stroke: #000;
 }
 .cell-selected {
-	fill: #fceb8f;
+	fill: #ffda00;
 }
 .cell-label {
 	fill: #000;
@@ -24,6 +24,10 @@
 	fill: #a7d8ff;
 }
 
+.relative-clue {
+	background-color: #ffeca0;
+}
+
 .block {
 	fill: #000;
 	stroke: #666;
@@ -35,6 +39,11 @@
 .highlighted-clue {
 	background-color: #a7d8ff;
 }
+
+.cell-relative {
+	fill: #ffeca0;
+}
+
 .toggle {
 	background-color: #7cb5fb;
 }
@@ -85,12 +94,21 @@
 	.highlighted {
 		fill: #39105c;
 	}
+
+	.cell-relative {
+		fill: #3a5270;
+	}
+
 	.block {
 		stroke: #000;
 	}
 
 	.highlighted-clue {
 		background-color: #4277b8;
+	}
+
+	.relative-clue {
+		background-color: #3a5270;
 	}
 
 	.toggle {

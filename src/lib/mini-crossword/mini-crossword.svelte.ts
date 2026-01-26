@@ -52,7 +52,12 @@ export class MiniCrossword {
 
 	handleCellClick = (index: number, cell: CellType) => {
 		if (!cell.answer) return;
-		this.selectedCellIndex = index;
+
+		if (this.selectedCellIndex === index) {
+			this.direction = this.direction === 'Across' ? 'Down' : 'Across';
+		} else {
+			this.selectedCellIndex = index;
+		}
 	};
 
 	handleArrowKey = (e: KeyboardEvent) => {
@@ -212,7 +217,7 @@ export class MiniCrossword {
 		}
 
 		this.checkedState = results;
-	}
+	};
 
 	reset() {
 		this.userInput = {};

@@ -6,6 +6,14 @@
 	const gameContext: MiniCrossword = getContext('game');
 
 	let { clueDirection }: { clueDirection: DirectionType } = $props();
+
+	function isRelativeClue(label: string) {
+		return (
+			gameContext.currentClue.relatives?.some(
+				(relativeIndex: number) => gameContext.clues[relativeIndex].label === label
+			) ?? false
+		);
+	}
 </script>
 
 <ol>
@@ -17,6 +25,7 @@
 			<li
 				class="my-1 flex gap-2 rounded px-4"
 				class:highlighted-clue={clue === gameContext.currentClue}
+				class:relative-clue={isRelativeClue(clue.label)}
 			>
 				<span
 					class="flex w-6 justify-center rounded px-2 font-semibold"

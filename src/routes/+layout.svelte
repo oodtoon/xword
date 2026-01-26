@@ -3,7 +3,6 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { onMount } from 'svelte';
 	import DarkModeSwitch from '$lib/components/DarkModeSwitch.svelte';
-	import LinkButton from '$lib/components/LinkButton.svelte';
 	import Home from '$lib/components/icons/Home.svelte';
 
 	let { children } = $props();
@@ -18,7 +17,6 @@
 	});
 
 	function updateDom() {
-		console.log(document.documentElement);
 		document.documentElement.classList.toggle('dark', isDarkMode);
 	}
 
