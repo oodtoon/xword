@@ -16,13 +16,14 @@ export type ClueType = {
 	direction: DirectionType;
 	label: string;
 	text: TextType[];
+	relatives: number[];
 };
 
 export type GameDataType = {
 	cells: CellType[];
 	clues: ClueType[];
 	dimensions: {
-		height: number
-		width: number
+		height: number;
+		width: number;
 	};
-}
+};

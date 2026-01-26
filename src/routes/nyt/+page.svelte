@@ -16,8 +16,10 @@
 
 <div class="flex justify-center gap-10 p-10">
 	<div class="flex w-xl flex-col items-center gap-4">
-		<div class="highlighted-clue mx-auto w-full max-w-md rounded px-6 py-2">
-			<h3 class="font-semibold">{game.direction}</h3>
+		<div
+			class="highlighted-clue mx-auto flex h-16 w-full max-w-xl items-center gap-2 rounded px-6 py-2"
+		>
+			<h3 class="w-20 font-semibold">{game.currentClue.label} {game.currentClue.direction}</h3>
 			{game.currentClue?.text[0].plain}
 		</div>
 		<CrosswordGrid />
@@ -28,7 +30,7 @@
 			>Check Puzzle</button
 		>
 		<div class="flex flex-col gap-10">
-			<ClueList  clueDirection={'Across'} />
+			<ClueList clueDirection={'Across'} />
 			<ClueList clueDirection={'Down'} />
 		</div>
 	</div>

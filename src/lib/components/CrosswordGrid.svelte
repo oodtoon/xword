@@ -23,6 +23,14 @@
 
 		return false;
 	}
+
+	function highlightRelative(index: number) {
+		return (
+			gameContext.currentClue.relatives?.some((relativeIndex: number) =>
+				gameContext.clues[relativeIndex].cells.includes(index)
+			) ?? false
+		);
+	}
 </script>
 
 <svg viewBox="0 0 100 100" class="mx-auto w-full max-w-md border-2 border-black">
@@ -36,8 +44,8 @@
 		{@const isHighlighted =
 			index !== gameContext.selectedCellIndex && cell.answer && shouldHighlightCell(row, col)}
 		<g
-			onclick={() => gameContext.handleCellClick(index, cell)}
-			style="cursor: {isBlock ? 'default' : 'pointer'}"
+		onclick={() => gameContext.handleCellClick(index, cell)}
+		style="cursor: {isBlock ? 'default' : 'pointer'}"
 		>
 			<rect
 				x="{x}%"
@@ -51,14 +59,15 @@
 						: isHighlighted
 							? 'highlighted'
 							: 'cell'} cell-border"
+				class:cell-relative={highlightRelative(index)}
 				stroke-width="0.3"
 			/>
 			{#if cell.label}
 				<text
 					class="cell-label select-none"
-					x="{x + 0.5}%"
-					y="{y + 2.5}%"
-					font-size="2"
+					x="{x + 1}%"
+					y="{y + 3.5}%"
+					font-size="3.5"
 					font-family="Arial, sans-serif"
 				>
 					{cell.label}
