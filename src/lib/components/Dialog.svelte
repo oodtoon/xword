@@ -1,4 +1,6 @@
 <script lang="ts">
+	import CrosswordIcon from './icons/CrosswordIcon.svelte';
+
 	let dialog = $state<HTMLDialogElement | null>(null);
 
 	let { isOpen = $bindable(false) } = $props();
@@ -24,10 +26,13 @@
 	onclose={() => (isOpen = false)}
 >
 	<div class="flex h-full items-center justify-center">
-    <div class="text-center">
-      <h2 class="mb-4 text-2xl font-bold">Congratulations!</h2>
-      <p class="mb-6">You solved <b> The Mini! </b></p>
-      <button onclick={closeDialog} class="check-puzzle-btn p-4 rounded-full cursor-pointer"> Back To Puzzle </button>
-    </div>
+		<div class="text-center">
+			<CrosswordIcon className="m-auto"/>
+			<h2 class="mb-4 text-2xl font-bold">Congratulations!</h2>
+			<p class="mb-6">You solved <b> The Mini! </b></p>
+			<button onclick={closeDialog} class="check-puzzle-btn cursor-pointer rounded-full p-4">
+				Back To Puzzle
+			</button>
+		</div>
 	</div>
 </dialog>
