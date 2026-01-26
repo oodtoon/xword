@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ClueList from '$lib/components/ClueList.svelte';
 	import CrosswordGrid from '$lib/components/CrosswordGrid.svelte';
+	import Dialog from '$lib/components/Dialog.svelte';
 	import { MiniCrossword } from '$lib/mini-crossword/mini-crossword.svelte.js';
 	import { setContext } from 'svelte';
 	let { data } = $props();
@@ -14,6 +15,7 @@
 	});
 </script>
 
+<Dialog bind:isOpen={game.isWin} />
 <div class="flex justify-center gap-10 p-10">
 	<div class="flex w-xl flex-col items-center gap-4">
 		<div

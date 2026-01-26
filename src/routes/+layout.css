@@ -141,4 +141,9 @@
 	::-webkit-calendar-picker-indicator {
 		filter: invert(1);
 	}
+
+	dialog {
+		color: white;
+		background-color: #121212;
+	}
 }
