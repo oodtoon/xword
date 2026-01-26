@@ -1,39 +1,23 @@
 <script lang="ts">
-	import type { CellType, DirectionType } from '$lib/types/crossword';
+	import { type MiniCrossword } from '$lib/mini-crossword/mini-crossword.svelte';
+	import { getContext } from 'svelte';
 
-	let {
-		cells,
-		width,
-		height,
-		direction,
-		selectedCell,
-		userInput,
-		checkedState,
-		handleCellClick
-	}: {
-		cells: CellType[];
-		width: number;
-		height: number;
-		direction: DirectionType;
-		selectedCell: number;
-		userInput: Record<number, string>;
-		checkedState: Record<number, boolean> | null;
-		handleCellClick: (index: number, cell: CellType) => void;
-	} = $props();
+	const gameContext: MiniCrossword = getContext('game');
+	const { cells, width, height } = gameContext;
 
 	const cellSize = 100 / Math.max(width, height);
 
-	let selectedRow = $derived.by(() => Math.floor(selectedCell / width));
-	let selectedColumn = $derived.by(() => selectedCell % width);
+	let selectedRow = $derived.by(() => Math.floor(gameContext.selectedCellIndex / width));
+	let selectedColumn = $derived.by(() => gameContext.selectedCellIndex % width);
 
 	function shouldHighlightCell(row: number, column: number) {
-		if (!selectedCell) return false;
+		if (!gameContext.selectedCellIndex) return false;
 
-		if (direction === 'Across') {
+		if (gameContext.direction === 'Across') {
 			return row === selectedRow;
 		}
 
-		if (direction === 'Down') {
+		if (gameContext.direction === 'Down') {
 			return column === selectedColumn;
 		}
 
@@ -48,10 +32,11 @@
 		{@const x = col * cellSize}
 		{@const y = row * cellSize}
 		{@const isBlock = !cell.answer}
-		{@const isSelected = selectedCell === index}
-		{@const isHighlighted = index !== selectedCell && cell.answer && shouldHighlightCell(row, col)}
+		{@const isSelected = gameContext.selectedCellIndex === index}
+		{@const isHighlighted =
+			index !== gameContext.selectedCellIndex && cell.answer && shouldHighlightCell(row, col)}
 		<g
-			onclick={() => handleCellClick(index, cell)}
+			onclick={() => gameContext.handleCellClick(index, cell)}
 			style="cursor: {isBlock ? 'default' : 'pointer'}"
 		>
 			<rect
@@ -79,9 +64,9 @@
 					{cell.label}
 				</text>
 			{/if}
-			{#if !isBlock && userInput[index]}
+			{#if !isBlock && gameContext.userInput[index]}
 				<text
-					class={checkedState?.[index] && userInput[index] === cell.answer
+					class={gameContext.checkedState?.[index] && gameContext.userInput[index] === cell.answer
 						? 'correct-letter'
 						: 'cell-letter'}
 					x="{x + cellSize / 2}%"
@@ -90,9 +75,9 @@
 					text-anchor="middle"
 					dominant-baseline="middle"
 				>
-					{userInput[index]}
+					{gameContext.userInput[index]}
 				</text>
-				{#if checkedState?.[index] === false}
+				{#if gameContext.checkedState?.[index] === false}
 					<line
 						x1={x}
 						y1={y + cellSize}
