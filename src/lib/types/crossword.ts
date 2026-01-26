@@ -17,3 +17,12 @@ export type ClueType = {
 	label: string;
 	text: TextType[];
 };
+
+export type GameDataType = {
+	cells: CellType[];
+	clues: ClueType[];
+	dimensions: {
+		height: number
+		width: number
+	};
+}
