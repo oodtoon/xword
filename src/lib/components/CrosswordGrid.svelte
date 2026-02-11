@@ -6,31 +6,6 @@
 	const { cells, width, height } = gameContext;
 
 	const cellSize = 100 / Math.max(width, height);
-
-	let selectedRow = $derived.by(() => Math.floor(gameContext.selectedCellIndex / width));
-	let selectedColumn = $derived.by(() => gameContext.selectedCellIndex % width);
-
-	function shouldHighlightCell(row: number, column: number) {
-		if (!gameContext.selectedCellIndex) return false;
-
-		if (gameContext.direction === 'Across') {
-			return row === selectedRow;
-		}
-
-		if (gameContext.direction === 'Down') {
-			return column === selectedColumn;
-		}
-
-		return false;
-	}
-
-	function highlightRelative(index: number) {
-		return (
-			gameContext.currentClue.relatives?.some((relativeIndex: number) =>
-				gameContext.clues[relativeIndex].cells.includes(index)
-			) ?? false
-		);
-	}
 </script>
 
 <svg viewBox="0 0 100 100" class="mx-auto w-full max-w-md border-2 border-black">
@@ -42,10 +17,10 @@
 		{@const isBlock = !cell.answer}
 		{@const isSelected = gameContext.selectedCellIndex === index}
 		{@const isHighlighted =
-			index !== gameContext.selectedCellIndex && cell.answer && shouldHighlightCell(row, col)}
+			index !== gameContext.selectedCellIndex && gameContext.highlightedCells.includes(index)}
 		<g
 		onclick={() => gameContext.handleCellClick(index, cell)}
-		style="cursor: {isBlock ? 'default' : 'pointer'}"
+		style="cursor: {isBlock ? 'default' : 'pointer'}; user-select: none"
 		>
 			<rect
 				x="{x}%"
@@ -59,7 +34,7 @@
 						: isHighlighted
 							? 'highlighted'
 							: 'cell'} cell-border"
-				class:cell-relative={highlightRelative(index)}
+				class:cell-relative={gameContext.highlightRelative(index)}
 				stroke-width="0.3"
 			/>
 			{#if cell.label}
