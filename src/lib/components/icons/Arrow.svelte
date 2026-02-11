@@ -1,8 +1,8 @@
 <script lang="ts">
-  let { width = "32", height = "32", classStyle } = $props()
+  let { width = "32", height = "32", className } = $props()
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} class={classStyle} viewBox="0 0 24 24"
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} class={className} viewBox="0 0 24 24"
 	><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path
 		fill="currentColor"
 		d="M15.835 11.63L9.205 5.2C8.79 4.799 8 5.042 8 5.57v12.86c0 .528.79.771 1.205.37l6.63-6.43a.5.5 0 0 0 0-.74"

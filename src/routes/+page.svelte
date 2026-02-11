@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Arrow from '$lib/components/icons/Arrow.svelte';
+	import CrosswordIcon from '$lib/components/icons/CrosswordIcon.svelte';
 	import HourGlass from '$lib/components/icons/HourGlass.svelte';
 	import LinkButton from '$lib/components/LinkButton.svelte';
 	import Title from '$lib/components/Title.svelte';
@@ -24,11 +25,22 @@
 </script>
 
 <Title>Build Your Own Mini Crossword!</Title>
-<div class="mx-auto grid max-w-md grid-cols-2 gap-x-6 gap-y-2">
-	<LinkButton href="/setup/blocks">Create Puzzle</LinkButton>
-	<LinkButton href={`/nyt${selectedDate ? `?${new URLSearchParams({ date: selectedDate })}` : ''}`}
-		>Play NYT Mini</LinkButton
-	>
+<div class="mx-auto grid max-w-lg grid-cols-2 gap-x-6 gap-y-2">
+	<LinkButton href="/setup/blocks">
+		<div class="flex items-center h-full">
+			<span class="m-auto">
+				Create Puzzle
+			</span>
+		</div>
+	</LinkButton>
+	<LinkButton href={`/nyt${selectedDate ? `?${new URLSearchParams({ date: selectedDate })}` : ''}`}>
+		<div class="flex items-center h-full">
+			<span class="m-auto flex gap-2">
+				Play NYT Mini
+			</span>
+			<CrosswordIcon />
+		</div>
+	</LinkButton>
 	<div></div>
 	<button
 		onclick={toggleDateSelect}
@@ -40,7 +52,7 @@
 		<Arrow
 			width="18"
 			height="18"
-			classStyle="transition-transform duration-300 ease-in-out
+			className="transition-transform duration-300 ease-in-out
 		       {isDateSelectShowing ? 'rotate-90' : 'rotate-0'}"
 		/>
 	</button>
