@@ -4,7 +4,6 @@
 
 	const gameContext: MiniCrossword = getContext('game');
 	const { cells, width, height } = gameContext;
-
 	const cellSize = 100 / Math.max(width, height);
 </script>
 
