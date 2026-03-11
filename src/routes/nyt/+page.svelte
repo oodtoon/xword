@@ -6,7 +6,7 @@
 	import { setContext } from 'svelte';
 	let { data } = $props();
 
-	const game = new MiniCrossword(data.game.body['0']);
+	const game = new MiniCrossword(data.game.body[0]);
 	setContext('game', game);
 
 	$effect(() => {

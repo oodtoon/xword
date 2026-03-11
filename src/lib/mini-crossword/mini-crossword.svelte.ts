@@ -14,19 +14,21 @@ export class MiniCrossword {
 	userInput = $state<Record<number, string>>({});
 	checkedState = $state<Record<number, boolean> | null>(null);
 
-	currentClue = $derived(
+	currentClue = $derived<ClueType>(
 		this.clues.find(
 			(clue: ClueType) =>
 				clue.direction === this.direction && clue.cells.includes(this.selectedCellIndex)
 		)!
 	);
 
-	altClue = $derived(
+	altClue = $derived<ClueType>(
 		this.clues.find(
 			(clue: ClueType) =>
 				clue.direction !== this.direction && clue.cells.includes(this.selectedCellIndex)
 		)!
 	);
+
+	highlightedCells = $derived<number[]>(this.currentClue.cells);
 
 	constructor(game: GameDataType) {
 		this.cells = game.cells;
@@ -36,20 +38,6 @@ export class MiniCrossword {
 		this.selectedCellIndex = game.clues[0].cells[0];
 		this.totalCells = this.width * this.height;
 	}
-
-	getCurrentClue = () => {
-		return this.clues.find(
-			(clue: ClueType) =>
-				clue.direction === this.direction && clue.cells.includes(this.selectedCellIndex)
-		);
-	};
-
-	getAltClue = () => {
-		return this.clues.find(
-			(clue: ClueType) =>
-				clue.direction !== this.direction && clue.cells.includes(this.selectedCellIndex)
-		);
-	};
 
 	handleCellClick = (index: number, cell: CellType) => {
 		if (!cell.answer) return;
@@ -126,36 +114,29 @@ export class MiniCrossword {
 			}
 		}
 	};
-
+	
 	handleTabPress = (e: KeyboardEvent) => {
 		e.preventDefault();
-
-		const currentRow = Math.floor(this.selectedCellIndex! / this.width);
-		const currentCol = this.selectedCellIndex! % this.width;
-		const rowJump = 1;
-
-		if (this.direction === 'Across') {
-			const nextRow = utils.getNextLine(e, currentRow, this.height);
-			const startIndex = nextRow * this.width;
-			const nextCell = utils.findNextAvailableCell(this.cells, startIndex, rowJump, this.width);
-
-			if (nextCell !== null) this.selectedCellIndex = nextCell;
-		} else {
-			const nextCol = utils.getNextLine(e, currentCol, this.width);
-			const nextCell = utils.findNextAvailableCell(this.cells, nextCol, this.width, this.height);
-
-			if (nextCell !== null) this.selectedCellIndex = nextCell;
-		}
+		const totalClues = this.clues.length;
+		const currentClueIndex = this.clues.findIndex((clue) => clue === this.currentClue);
+		const tabDirection = e.shiftKey ? -1 : 1;
+		
+		const nextClueIndex = (currentClueIndex + tabDirection + totalClues) % totalClues;
+		
+		const nextClue = this.clues[nextClueIndex];
+		
+		this.selectedCellIndex = this.getEarliestBlankIndex(nextClue.cells) || nextClue.cells[0];
+		this.direction = nextClue.direction;
 	};
-
+	
 	handleBackspace = () => {
 		if (!this.checkedState?.[this.selectedCellIndex]) {
 			delete this.userInput[this.selectedCellIndex];
 		}
-
+		
 		const currentCol = this.selectedCellIndex % this.width;
 		let newIndex = this.selectedCellIndex;
-
+		
 		for (let i = 0; i < this.totalCells; i++) {
 			if (this.direction === 'Across') {
 				newIndex = utils.selectToLeft(newIndex, this.totalCells);
@@ -165,31 +146,31 @@ export class MiniCrossword {
 					newIndex = utils.selectUp(currentCol, this.width, this.height);
 				}
 			}
-
+			
 			if (this.cells[newIndex]?.answer) {
 				this.selectedCellIndex = newIndex;
 				return;
 			}
 		}
 	};
-
+	
 	handleKeyPress = (e: KeyboardEvent) => {
 		if (this.selectedCellIndex === null) return;
-
+		
 		if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
 			this.handleArrowKey(e);
 			return;
 		}
-
+		
 		if (e.key === 'Backspace') {
 			this.handleBackspace();
 			return;
 		}
-
+		
 		if (e.key === 'Tab') {
 			this.handleTabPress(e);
 		}
-
+		
 		const key = e.key.toUpperCase();
 		if (key.length === 1 && key >= 'A' && key <= 'Z') {
 			this.handleLetterPress(key, e);
@@ -198,7 +179,7 @@ export class MiniCrossword {
 			}
 		}
 	};
-
+	
 	clearIncorrectCellCheck = (index: number) => {
 		if (this.checkedState && this.checkedState[index] === false) {
 			const newCheckedState = { ...this.checkedState };
@@ -206,6 +187,19 @@ export class MiniCrossword {
 			this.checkedState = newCheckedState;
 		}
 	};
+	
+	highlightRelative = (index: number): boolean => {
+		return (
+			this.currentClue?.relatives?.some(
+				(relativeIndex: number) =>
+					this.clues[relativeIndex].cells.includes(index) && index !== this.selectedCellIndex
+			) ?? false
+		);
+	};
+	
+	getEarliestBlankIndex(indexes: number[]) {
+		return indexes.find((index) => !this.userInput[index])
+	}
 
 	checkPuzzle = () => {
 		const results: Record<number, boolean> = {};
