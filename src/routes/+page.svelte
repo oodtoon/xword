@@ -39,20 +39,20 @@
 
 <Title>Build Your Own Mini Crossword!</Title>
 <div class="mx-auto grid max-w-lg grid-cols-2 gap-x-6 gap-y-2">
-	<LinkButton href="/setup/blocks">
-		<div class="flex h-full items-center">
-			<span class="m-auto"> Create Puzzle </span>
-		</div>
-	</LinkButton>
 	<LinkButton
-		href={`/nyt${selectedDate ? `?${new URLSearchParams({ date: selectedDate })}` : offlineGameType ? `?${new URLSearchParams({ offlineGameType })}` : ''}`}
+		href={`/nyt?size=mini${selectedDate ? `&${new URLSearchParams({ date: selectedDate })}` : offlineGameType ? `&${new URLSearchParams({ offlineGameType })}` : ''}`}
 	>
 		<div class="flex h-full items-center">
-			<span class="m-auto flex gap-2"> Play NYT Mini </span>
+			<span class="m-auto flex gap-2"> Play MINI</span>
 			<CrosswordIcon />
 		</div>
 	</LinkButton>
-	<div></div>
+	<LinkButton href="/nyt?size=midi">
+		<div class="flex h-full items-center">
+			<span class="m-auto flex gap-2"> Play MIDI</span>
+			<CrosswordIcon />
+		</div>
+	</LinkButton>
 	<button
 		onclick={toggleDateSelect}
 		class="flex h-6 cursor-pointer items-center justify-center gap-6
@@ -83,7 +83,11 @@
 		</div>
 	{/if}
 
-	<div></div>
+	<LinkButton href="/setup/blocks">
+		<div class="flex h-full items-center">
+			<span class="m-auto"> Create Puzzle</span>
+		</div>
+	</LinkButton>
 	<div>
 		<label for="offline-data-checkbox">I am offline</label>
 		<input type="checkbox" id="offline-data-checkbox" bind:checked={isOffline} />
